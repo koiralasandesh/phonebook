@@ -24,7 +24,7 @@ def add_user(argv,conn):
     name_result=name_regex.match(argv[0])
     number_result=number_regex.match(argv[1])
     if name_result and number_result:
-        add_sql = 'INSERT INTO users VALUES ("' + argv[0] + '","' + argv[1] + '");'
+        add_sql = 'INSERT INTO users VALUES (?,?);'
     else:
         sys.stderr.write("Invalid Input!")
         logging.error("invalid user not added - <"+ argv[0]+"> <"+argv[1]+">")
@@ -32,7 +32,8 @@ def add_user(argv,conn):
     #print(add_sql)
     c=conn.cursor()
     try:
-        c.execute(add_sql)
+        data_tuple=(argv[0],argv[1])
+        c.execute(add_sql,data_tuple)
         conn.commit()
         conn.close()
         logging.info("user added - <" + argv[0] + "> <" + argv[1]+">")
@@ -52,14 +53,15 @@ def remove_user(argv,conn):
     name_result=name_regex.match(argv[0])
     number_result=number_regex.match(argv[0])
     if name_result or number_result:
-        remove_sql = 'DELETE FROM users WHERE name="' + argv[0] + '" OR phone="'+argv[0]+'";'
+        remove_sql = 'DELETE FROM users WHERE name=? OR phone=?;'
     else:
         sys.stderr.write("Invalid Input!")
         logging.error("invalid user not deleted - <"+ argv[0]+">")
         exit(1)
     c = conn.cursor()
     try:
-        c.execute(remove_sql)
+        data_tuple=(argv[0],argv[1])
+        c.execute(remove_sql,data_tuple)
         conn.commit()
         conn.close()
         logging.info("user removed - <" + argv[0]+">")
